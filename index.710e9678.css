@@ -1,0 +1,13 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+    background-color: black;
+}
+
+canvas[resize] {
+    width: 100%;
+    height: 100%;
+}
+/*# sourceMappingURL=index.710e9678.css.map */
