@@ -2,19 +2,31 @@
   "name": "spirographs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "source": "src/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel",
+    "build": "parcel build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jwardbond/spirographs.git"
   },
-  "keywords": ["spirographs"],
+  "keywords": [
+    "spirographs"
+  ],
   "author": "Jesse",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jwardbond/spirographs/issues"
   },
-  "homepage": "https://github.com/jwardbond/spirographs#readme"
+  "homepage": "https://github.com/jwardbond/spirographs#readme",
+  "devDependencies": {
+    "eslint": "^8.6.0"
+  },
+  "dependencies": {
+    "paper": "^0.12.15",
+    "parcel": "^2.1.1",
+    "three": "^0.136.0"
+  }
 }
