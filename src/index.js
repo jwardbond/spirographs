@@ -43,10 +43,7 @@ function Spirograph(xc, yc, col, R, r, l) {
     };
 
     this.createOuter = function() {
-        let xc = this.xc; 
-        let yc = this.yc;
         let R = this.R;
-        let r = this.r;
         
         let outer = new paper.Path.Circle(paper.view.center, R);
         return outer;
@@ -58,11 +55,12 @@ function Spirograph(xc, yc, col, R, r, l) {
         let R = this.R;
         let r = this.r;
 
-        let innerCenterY = yc - (R-r)*Math.sin(angle);
+        let innerCenterY = yc + (R-r)*Math.sin(angle);
         let innerCenterX = xc + (R-r)*Math.cos(angle);
-        let innerCenter = new paper.Point(innerCenterX, innerCenterY);
-        let inner = new paper.Path.Circle(innerCenter, r);
-        return inner;
+        let innerCenterPoint = new paper.Point(innerCenterX, innerCenterY);
+        let innerCenter = new paper.Path.Circle(innerCenterPoint, 2)
+        let inner = new paper.Path.Circle(innerCenterPoint, r);
+        return [inner, innerCenter];
     };
 
     this.calcPoint = function(angle) {
@@ -78,35 +76,80 @@ function Spirograph(xc, yc, col, R, r, l) {
         let coord = new paper.Point(x+xc, y+yc);
         let point = new paper.Path.Circle(coord, 2);
         return point;
-    }
+    };
 
+    this.createPCLine = function(P, C) {
+        let PCLine = new paper.Path.Line(P, C);
+        return PCLine;
+    };
 
 }
 
 var center = paper.view.center;
-var mySpiro = new Spirograph(center.x, center.y, 'blue', 360, 300, 0.6);
+var mySpiro = new Spirograph(center.x, center.y, 'blue', 360, 80, 0.77);
 mySpiro.draw();
-mySpiro.inner = mySpiro.createInner(Math.PI/4);
-mySpiro.inner.strokeColor = 'green'
 
-mySpiro.outer = mySpiro.createOuter()
-mySpiro.outer.strokeColor = 'red'
-mySpiro.outer.strokeWidth = 3
+//draw outer circle
+mySpiro.outerCircle = mySpiro.createOuter()
+mySpiro.outerCircle.strokeColor = 'red'
+mySpiro.outerCircle.strokeWidth = 3
 
-mySpiro.point = mySpiro.calcPoint(Math.PI/4);
-mySpiro.point.strokeColor = 'yellow';
-mySpiro.point.strokeWidth = 3;
+//draw inner circle
+var inner = mySpiro.createInner(Math.PI/4);
+mySpiro.innerCircle = inner[0];
+mySpiro.innerCircle.strokeColor = 'green'
+mySpiro.innerCircle.strokeWidth = 3
+
+//set C
+mySpiro.C = inner[1]
+mySpiro.C.strokeColor = 'yellow';
+mySpiro.C.strokeWidth = 5;
+
+//set P
+mySpiro.P = mySpiro.calcPoint(Math.PI/4);
+mySpiro.P.strokeColor = 'yellow';
+mySpiro.P.strokeWidth = 5;
+
+//set PCLine
+mySpiro.PCLine = mySpiro.createPCLine(
+    new paper.Point(mySpiro.C.position.x, mySpiro.C.position.y),
+    new paper.Point(mySpiro.P.position.x, mySpiro.P.position.y)
+); //for rendering purposes, points are stored as circles, not as actual points
+mySpiro.PCLine.strokeColor = 'yellow';
+mySpiro.PCLine.strokeWidth = 3;
+
 
 paper.view.onFrame = function(event) {
-    mySpiro.inner.remove();
-    mySpiro.inner = mySpiro.createInner(event.count/10);
-    mySpiro.inner.strokeColor='green';
-    mySpiro.inner.strokeWidth = 3;
 
-    mySpiro.point.remove();
-    mySpiro.point = mySpiro.calcPoint(event.count/10);
-    mySpiro.point.strokeColor = 'yellow';
-    mySpiro.point.strokeWidth = 5;
+    let angleStep = event.count*mySpiro.k/10; 
+    
+    //remove and redraw the inner circle
+    let inner = mySpiro.createInner(angleStep);
+    mySpiro.innerCircle.remove();
+    mySpiro.innerCircle = inner[0];
+    mySpiro.innerCircle.strokeColor='green';
+    mySpiro.innerCircle.strokeWidth = 3;
+
+    //remove and redraw C
+    mySpiro.C.remove();
+    mySpiro.C = inner[1];
+    mySpiro.C.strokeColor = 'yellow';
+    mySpiro.C.strokeWidth = 5;
+
+    //remove and redraw P
+    mySpiro.P.remove();
+    mySpiro.P = mySpiro.calcPoint(angleStep);
+    mySpiro.P.strokeColor = 'yellow';
+    mySpiro.P.strokeWidth = 5;
+
+    //remove and redraw PCLine
+    mySpiro.PCLine.remove();
+    mySpiro.PCLine = mySpiro.createPCLine(
+        new paper.Point(mySpiro.C.position.x, mySpiro.C.position.y),
+        new paper.Point(mySpiro.P.position.x, mySpiro.P.position.y)
+    );
+    mySpiro.PCLine.strokeColor = 'yellow';
+    mySpiro.PCLine.strokeWidth = 3;
 }
 
 
